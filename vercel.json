@@ -1,9 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/api/generate-image",
-      "dest": "/api/generate-image.ts"
-    }
-  ]
-}
-
