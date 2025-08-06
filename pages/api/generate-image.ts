@@ -1,46 +1,64 @@
-export const config = {
-  runtime: 'nodejs',
-};
-
-import { Resvg } from '@resvg/resvg-js';
+import { NextRequest } from 'next/server';
+import { ImageResponse } from '@vercel/og';
 import satori from 'satori';
+import { Resvg } from '@resvg/resvg-js';
 import fs from 'fs';
 import path from 'path';
 
-export default async function handler(req, res) {
-  const { text = 'Hello World', fontSize = 48, color = '#000000', width = 800 } = req.query;
+export const config = {
+  runtime: 'edge',
+};
 
-  const fontPath = path.join(process.cwd(), 'public', 'fonts', 'Inter-Regular.ttf');
+export default async function handler(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+
+  const text = searchParams.get('text') || 'Hello World';
+  const fontSize = parseInt(searchParams.get('fontSize') || '48', 10);
+  const color = searchParams.get('color') || '#000000';
+  const width = parseInt(searchParams.get('width') || '800', 10);
+
+  // Load Stabil Grotesk Regular font
+  const fontPath = path.join(process.cwd(), 'public/fonts/StabilGrotesk-Regular.otf');
   const fontData = fs.readFileSync(fontPath);
 
+  // Create SVG using Satori
   const svg = await satori(
+    <div
+      style={{
+        fontFamily: 'Stabil Grotesk',
+        fontSize,
+        color,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      {text}
+    </div>,
     {
-      type: 'div',
-      props: {
-        children: text,
-        style: {
-          fontSize: Number(fontSize),
-          color: color,
-          fontFamily: 'Inter',
-        },
-      },
-    },
-    {
-      width: Number(width),
+      width,
+      height: 400,
       fonts: [
         {
-          name: 'Inter',
+          name: 'Stabil Grotesk',
           data: fontData,
-          style: 'normal',
           weight: 400,
+          style: 'normal',
         },
       ],
     }
   );
 
+  // Convert SVG to PNG with Resvg
   const resvg = new Resvg(svg);
-  const pngBuffer = resvg.render().asPng();
+  const pngData = resvg.render();
+  const pngBuffer = pngData.asPng();
 
-  res.setHeader('Content-Type', 'image/png');
-  res.send(pngBuffer);
+  return new ImageResponse(pngBuffer, {
+    headers: {
+      'Content-Type': 'image/png',
+    },
+  });
 }
