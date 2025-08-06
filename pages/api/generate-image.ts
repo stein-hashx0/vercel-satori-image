@@ -16,16 +16,23 @@ export default async function handler(req: NextRequest) {
   const fontSize = parseInt(searchParams.get('fontSize') || '48', 10);
   const color = searchParams.get('color') || '#000000';
   const width = parseInt(searchParams.get('width') || '800', 10);
+  const height = 400;
 
-  // Load Stabil Grotesk Regular font
-  const fontPath = path.join(process.cwd(), 'public/fonts/StabilGrotesk-Regular.otf');
-  const fontData = fs.readFileSync(fontPath);
+  // Read StabilGrotesk font files (Regular and Bold for demo)
+  const fontRegular = fs.readFileSync(
+    path.resolve(process.cwd(), 'public/fonts/StabilGrotesk-Regular.otf')
+  );
+
+  const fontBold = fs.readFileSync(
+    path.resolve(process.cwd(), 'public/fonts/StabilGrotesk-Bold.otf')
+  );
 
   // Create SVG using Satori
   const svg = await satori(
     <div
       style={{
         fontFamily: 'StabilGrotesk',
+        fontWeight: 400,
         fontSize,
         color,
         width: '100%',
@@ -39,24 +46,35 @@ export default async function handler(req: NextRequest) {
     </div>,
     {
       width,
-      height: 400,
+      height,
       fonts: [
         {
           name: 'StabilGrotesk',
-          data: fontData,
+          data: fontRegular,
           weight: 400,
+          style: 'normal',
+        },
+        {
+          name: 'StabilGrotesk',
+          data: fontBold,
+          weight: 700,
           style: 'normal',
         },
       ],
     }
   );
 
-  // Convert SVG to PNG with Resvg
-  const resvg = new Resvg(svg);
-  const pngData = resvg.render();
-  const pngBuffer = pngData.asPng();
+  // Convert SVG to PNG using Resvg
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'width',
+      value: width,
+    },
+  });
 
-  return new ImageResponse(pngBuffer, {
+  const png = resvg.render().asPng();
+
+  return new ImageResponse(png, {
     headers: {
       'Content-Type': 'image/png',
     },
