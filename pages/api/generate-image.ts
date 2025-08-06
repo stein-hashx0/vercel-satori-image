@@ -25,7 +25,7 @@ export default async function handler(req: NextRequest) {
   const svg = await satori(
     <div
       style={{
-        fontFamily: 'Stabil Grotesk',
+        fontFamily: 'StabilGrotesk',
         fontSize,
         color,
         width: '100%',
