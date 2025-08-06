@@ -42,7 +42,7 @@ export default async function handler(req: NextRequest) {
       height: 400,
       fonts: [
         {
-          name: 'Stabil Grotesk',
+          name: 'StabilGrotesk',
           data: fontData,
           weight: 400,
           style: 'normal',
