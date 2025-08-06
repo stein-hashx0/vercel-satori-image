@@ -1,0 +1,9 @@
+{
+  "name": "vercel-satori-image",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@resvg/resvg-js": "^2.0.0",
+    "satori": "^0.10.0"
+  }
+}
