@@ -1,6 +1,6 @@
 {
   "functions": {
-    "pages/api/generate-image.ts": {
+    "api/generate-image.ts": {
       "includeFiles": "public/fonts/**"
     }
   }
