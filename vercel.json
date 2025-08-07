@@ -1,7 +1,9 @@
 {
--  "functions": {
--    "api/generate-image.ts": {
--      "includeFiles": "public/fonts/**"
--    }
--  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/generate-image.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
 }
